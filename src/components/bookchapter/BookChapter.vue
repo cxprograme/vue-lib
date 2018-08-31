@@ -31,22 +31,34 @@
 
 				</div>
 			</router-link>
+			<!-- 图书简介，评论 -->
+			<el-tabs style="border:none;padding:0;margin:0;" v-model="activeName"  stretch="stretch" @tab-click="handleClick">
+			    <el-tab-pane label="图书简介" name="first">
+			    	{{book.description}}
+			    </el-tab-pane>
+			    <el-tab-pane label="评论" name="second">
+			    	<comment></comment>
+			    </el-tab-pane>
+		  </el-tabs>
 			<borrow-box  :book='book'></borrow-box>
 		</div>
 	</div>
 </template>
 <script>
+	import comment from '@/components/common/comment/Comment'
 	import store from '@/store/store'
 	import BorrowBox from '@/components/common/borrow_box/BorrowBox'
 	export default{
 		name:'bookchapter',
 		data() {
 			return{
-				book: {}
+				book: {},
+				activeName:'first'
 			}
 		},
 		components:{
-			BorrowBox:BorrowBox
+			BorrowBox:BorrowBox,
+			Comment:comment
 		},
 		beforeMount:function(){
 			// this.book = this.$route.query.info;
@@ -58,6 +70,15 @@
 			//获取
 			//console.log('img_url:'+this.book.img_url);
 			//this.book = this.$state.state.book
+		},
+		methods:{
+			/**
+			 * Tab 点击事件
+			 * @type {[type]}
+			 */
+			handleClick:function(){
+
+			}
 		}
 	}
 </script>
