@@ -58,8 +58,9 @@
 				var user =JSON.parse(localStorage.getItem("user"));
 				// order_type 1表示借阅
 				var param ={
-					'book_id':this.book.booksets_id,
-					'person_id':user.person_id,
+					'bookset_id':this.book.booksets_id,
+					// 'person_id':user.person_id,
+					person_id:'3',
 					'order_type':'1'
 				}
 				post('http://localhost:8081/menuwork/hs/lib/book/operate',param).then(response => {

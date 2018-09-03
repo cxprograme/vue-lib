@@ -16,6 +16,8 @@ import ConfirmBorrow from '@/components/confirm_borrow/ConfirmBorrow'
 import Search from '@/components/search/Search'
 import Want from '@/components/want/Want'
 import AddWant from '@/components/want/add_want/AddWant'
+import MyBorrow from '@/components/me/myborrow/MyBorrow'
+import Evaluation from '@/components/me/comment/Evaluation'
 
 Vue.use(Router)
 
@@ -45,7 +47,9 @@ const routes = [
   { name: 'confirm',path:'/hslib/lib/confirm',component:ConfirmBorrow},
   { name: 'search',path:'/hslib/lib/search',component:Search},
   { name: 'want',path:'/hslib/lib/want',component:Want},
-  { name: 'addWant',path:'/hslib/lib/want/add',component:AddWant}
+  { name: 'addWant',path:'/hslib/lib/want/add',component:AddWant},
+  { name: 'myBorrow',path:'/hslib/lib/me/myborrow',component:MyBorrow},
+  { name: 'evalution',path:'/hslib/lib/me/comment',component:Evaluation}
 ];
 
 // 3. 创建 router 实例，然后传 `routes` 配置
