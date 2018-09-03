@@ -1,47 +1,22 @@
 <template>
-	<!-- <el-row>
-		<el-row class='tab_header'>
-			<el-col :span='4'>
-				<div class="b_img" style='width: 40px;height: 40px;background-color: orange'></div>
-			</el-col>
-			<el-col :span='14'>
-				<el-row>{{itemInfo.book_name}}</el-row>
-				<el-row>作者:{{itemInfo.author}}</el-row>
-			</el-col>
-			<el-col :span='6' style='text-align: center;'> -->
-				<!-- 1 立即借阅 -1 取消借阅 2 图书借出 -2 图书归还 3 续借 -->
-				<!-- 有没有标识判断是主动取消，还是被动取消的 -->
-		<!-- 		<el-row v-if="itemInfo.order_status==1">待取书</el-row>
-				<el-row v-else-if="itemInfo.order_status==-2">待评价</el-row>
-				<el-row v-else-if="itemInfo.order_status==2">未还书</el-row>
-				<el-row v-else-if="itemInfo.order_status==-1">删除记录</el-row>
-				<el-row>3月1日</el-row>
-			</el-col>
-		</el-row>
-		<el-row class='tab_bottom' >
-			<el-col :span='20'></el-col>
-			<el-col :span='5' :push='18'>
-				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.order_status==1" @click='cancelBorrow'>取消</el-button>
-
-				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.order_status==-2" @click="comment">评价</el-button>
-
-				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.order_status==2" @click="renew">续借</el-button>
-			</el-col>
-		</el-row>
-	</el-row> -->
-
 	<el-row>
 		<el-row class='tab_header'>
 			<el-col  :span='4'>
-				<div class="b_img" style='width: 40px;height: 40px;background-color: orange'></div>
+				<div class="b_img">
+					<img style='width: 50px;height: 50px;' :src="'/static'+itemInfo.picture">
+				</div>
 			</el-col>
 			<el-col class='elcol' :span='20'>
+				<!-- 待取书a  未还书b 待评价c 已经还书d 已过期e 已取消（自动取消）f  已取消（手动取消）g -->
 				<el-row class='elrow'>
 					<el-col :span='16'>{{itemInfo.book_name}}</el-col>
-					<el-col v-show='record' :span='6' :push='2' v-if="itemInfo.order_status==1">待取书</el-col>
-					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.order_status==-2">待评价</el-col>
-					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.order_status==2">未还书</el-col>
-					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.order_status==-1">删除记录</el-col>
+					<el-col v-show='record' :span='6' :push='2' v-if="itemInfo.line_statues=='a'">待取书</el-col>
+					<el-col v-show='record' :span='6' :push='2' v-if="itemInfo.line_statues=='b'">未还书</el-col>
+					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.line_statues=='c'">待评价</el-col>
+					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.line_statues=='d'">已还书</el-col>
+					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.line_statues=='e'">已过期</el-col>
+					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.line_statues=='f'">已取消</el-col>
+					<el-col v-show='record' :span='6' :push='2' v-else-if="itemInfo.line_statues=='g'">已取消</el-col>
 				</el-row>
 				<el-row class='elrow'>
 					<el-col :span='16'>作者:{{itemInfo.author}}</el-col>
@@ -49,14 +24,19 @@
 				</el-row>
 			</el-col>
 		</el-row>
-		<el-row class='tab_bottom' v-show="tabBottom">
-			<el-col :span='20'></el-col>
-			<el-col :span='5' :push='18'>
-				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.order_status==1" @click='cancelBorrow'>取消</el-button>
-
-				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.order_status==-2" @click="comment">评价</el-button>
-
-				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.order_status==2" @click="renew">续借</el-button>
+		<el-row class='tab_bottom' v-show="tabBottom" >
+			<el-col :span='18' style='width: 75%;height: 30px'>
+				<span v-if="itemInfo.line_statues=='e'">过期天数: {{itemInfo.delay_days}}</span>
+				<span v-if="itemInfo.line_statues=='e'">扣除经验: {{itemInfo.delay_days}}</span>
+				<span v-if="itemInfo.line_statues=='f'" style="font-size: 14px">超过一周未取书，系统自动取消借阅</span>
+			</el-col>
+			<el-col :span='5'>
+				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.line_statues=='a'" @click='cancelBorrow'>取消</el-button>
+				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.line_statues=='c'" @click="comment">评价</el-button>
+				<!-- 未还书，需要判断是否已经续借了 -->
+				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.line_statues=='b'" @click="renew">续借</el-button>
+				<el-button class ='btn' type='primary' size="mini" round v-if="itemInfo.line_statues=='d'||itemInfo.line_statues=='f'||itemInfo.line_statues=='g'" @click="deleteRecord">删除记录
+				</el-button>
 			</el-col>
 		</el-row>
 	</el-row>
@@ -152,7 +132,7 @@
 <style lang="stylus" type='stylus' rel="stylesheet/stylus" scoped>
 .tab_header
 	margin-top:5px
-	padding:20px 10px
+	padding:10px 10px
 	border:1px solid #eee;
 	.elrow
 		padding:0 0 0 5px
